@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SISTEMA DE RECICLAJE PARA EL FUTURO - LEM2036 - SCHOOL OF THE FUTURE - RED COGNITA</title>
   
-  <!-- Meta etiquetas para Acceso Directo Móvil -->
+  <!-- Meta etiquetas para Instalación Móvil / PWA -->
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,6 +15,7 @@
   <link id="appManifestLink" rel="manifest" href="">
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Librería externa auto-ajustable para generación de Código QR -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <style>
     .mirror {
@@ -59,10 +60,10 @@
           <p class="text-base sm:text-xl font-extrabold text-amber-300 mt-2 tracking-wide">Leonor Pulgar - Mariana Cabezas 5°E</p>
           
           <div class="flex flex-wrap items-center justify-center gap-3 mt-3.5">
-            <button id="fullscreenBtn" type="button" class="text-sm sm:text-base bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-2.5 px-5 rounded-xl border border-slate-500 shadow-md transition shrink-0 flex items-center gap-2" title="Pantalla Completa">
+            <button id="fullscreenBtn" class="text-sm sm:text-base bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-2.5 px-5 rounded-xl border border-slate-500 shadow-md transition shrink-0 flex items-center gap-2" title="Pantalla Completa">
               <span>⛶ Pantalla Completa</span>
             </button>
-            <button id="toggleGuideBtn" type="button" class="text-sm sm:text-base bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 font-bold py-2.5 px-5 rounded-xl border border-emerald-500/40 shadow-md transition shrink-0 flex items-center gap-2">
+            <button id="toggleGuideBtn" class="text-sm sm:text-base bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 font-bold py-2.5 px-5 rounded-xl border border-emerald-500/40 shadow-md transition shrink-0 flex items-center gap-2">
               <span>💡 Aprender</span>
             </button>
           </div>
@@ -71,7 +72,7 @@
     </div>
   </header>
 
-  <!-- Contenido Principal -->
+  <!-- Contenido Principal Ampliado para Tabletas -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
 
     <!-- Banner Ilustrativo: Leonor y Mariana ("Escanea tu basura") -->
@@ -81,21 +82,21 @@
       </div>
     </div>
 
-    <!-- Espacio de Trabajo Responsive -->
+    <!-- Espacio de Trabajo Responsive: Visor arriba, Resultado abajo -->
     <div id="scannerWorkspace" class="flex flex-col gap-6 w-full max-w-2xl mx-auto">
       
       <!-- Tarjeta del Visor de la Cámara -->
       <div id="cameraCard" class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl flex flex-col w-full transition-all duration-300">
-        <div id="videoContainer" class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden cursor-pointer">
+        <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
         
           <!-- Elemento de Video -->
-          <video id="webcam" autoplay playsinline webkit-playsinline muted class="w-full h-full object-cover mirror"></video>
+          <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover mirror"></video>
           
           <!-- Canvas oculto para procesar foto -->
           <canvas id="snapshotCanvas" class="hidden"></canvas>
 
-          <!-- Capa de Solicitud de Cámara (Oculta por defecto; solo aparece si el navegador exige un toque previo) -->
-          <div id="startCameraPrompt" class="hidden absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-5 gap-3 z-10 overflow-y-auto">
+          <!-- Capa de Solicitud de Cámara (Visible por defecto hasta que encienda el video) -->
+          <div id="startCameraPrompt" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-5 gap-3 z-10 overflow-y-auto">
             <div class="p-3.5 bg-emerald-500/10 rounded-full text-emerald-400 border border-emerald-500/20">
               <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -103,18 +104,26 @@
             </div>
             <h2 class="text-base font-bold text-slate-100">Activar Cámara para Escanear</h2>
             <p id="cameraPromptDesc" class="text-xs text-slate-300 max-w-sm leading-relaxed">
-              Toca el botón verde para encender la cámara en vivo:
+              Selecciona una opción para encender la cámara de tu dispositivo:
             </p>
             
+            <!-- Botones para cámara en vivo -->
             <div id="liveCamButtons" class="flex flex-wrap items-center justify-center gap-2 mt-1">
-              <button id="connectFrontCamBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-1.5">
-                🎥 Cámara Frontal en Vivo
+              <button id="connectFrontCamBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                Cámara Frontal en Vivo
               </button>
-              <button id="connectBackCamBtn" type="button" class="bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-1.5">
-                📷 Cámara Trasera en Vivo
+              <button id="connectBackCamBtn" class="bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                </svg>
+                Cámara Trasera en Vivo
               </button>
             </div>
 
+            <!-- Botones directos de Cámara Nativa -->
             <div class="flex flex-wrap items-center justify-center gap-2 mt-1 w-full max-w-sm">
               <label class="flex-1 min-w-[140px] cursor-pointer bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-3 px-3 rounded-xl transition text-center shadow-lg flex items-center justify-center gap-1.5">
                 <span>📸 Cámara Frontal (Foto)</span>
@@ -157,7 +166,7 @@
                   <input type="file" id="fileInputBackError" accept="image/*" capture="environment" class="hidden">
                 </label>
               </div>
-              <button id="retryCamBtn" type="button" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2 px-4 rounded-xl border border-slate-600 transition">
+              <button id="retryCamBtn" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2 px-4 rounded-xl border border-slate-600 transition">
                 Reintentar video en vivo
               </button>
             </div>
@@ -166,13 +175,15 @@
 
         <!-- Barra de Controles -->
         <div class="p-3 bg-slate-800 border-t border-slate-700/60 flex items-center justify-between gap-2">
-          <button id="switchCamBtn" type="button" title="Cambiar Cámara" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl transition active:scale-95 border border-slate-600/50">
+          <!-- Cambiar Cámara -->
+          <button id="switchCamBtn" title="Cambiar Cámara" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl transition active:scale-95 border border-slate-600/50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.03 8.03 0 01-15.357-2m15.357 2H15"></path>
             </svg>
           </button>
 
-          <button id="captureBtn" type="button" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 text-base active:scale-98">
+          <!-- Botón Principal: Escanear -->
+          <button id="captureBtn" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 text-base active:scale-98">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l0.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l0.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
               <circle cx="12" cy="13" r="3" stroke-width="2"></circle>
@@ -180,11 +191,12 @@
             Capturar e Identificar
           </button>
 
+          <!-- Archivo/Galería -->
           <label title="Abrir Galería o Cámara Nativa" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl cursor-pointer transition active:scale-95 flex items-center justify-center border border-slate-600/50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
-            <input type="file" id="fileInputIcon" accept="image/*" class="hidden">
+            <input type="file" id="fileInputIcon" accept="image/*" capture="user" class="hidden">
           </label>
         </div>
       </div>
@@ -258,7 +270,7 @@
             <span class="text-sm sm:text-base font-bold text-amber-300 font-sans mt-1">LEM2036 - Leonor Pulgar / Mariana Cabezas 5°E</span>
           </div>
 
-          <button id="resetBtn" type="button" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 rounded-xl transition text-base mt-2">
+          <button id="resetBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 rounded-xl transition text-base mt-2">
             Escanear otro residuo
           </button>
         </div>
@@ -273,16 +285,16 @@
             </h3>
             <p class="text-[11px] text-slate-400">Aprende sobre el reciclaje inteligente y datos fascinantes</p>
           </div>
-          <button id="closeGuideBtn" type="button" class="p-1.5 text-slate-400 hover:text-white bg-slate-700 rounded-lg text-xs transition">
+          <button id="closeGuideBtn" class="p-1.5 text-slate-400 hover:text-white bg-slate-700 rounded-lg text-xs transition">
             ✕ Cerrar
           </button>
         </div>
 
         <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 text-xs font-semibold max-w-md mx-auto">
-          <button id="tabColorsBtn" type="button" class="flex-1 py-1.5 rounded-lg bg-emerald-500 text-slate-950 transition text-center shadow">
+          <button id="tabColorsBtn" class="flex-1 py-1.5 rounded-lg bg-emerald-500 text-slate-950 transition text-center shadow">
             Contenedores (5 Colores)
           </button>
-          <button id="tabFactsBtn" type="button" class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition text-center">
+          <button id="tabFactsBtn" class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition text-center">
             💡 Datos Curiosos
           </button>
         </div>
@@ -390,7 +402,7 @@
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full text-center space-y-3 shadow-2xl">
       <h3 id="modalTitle" class="text-lg font-bold text-slate-100">Aviso</h3>
       <p id="modalMessage" class="text-sm text-slate-300">Mensaje del sistema.</p>
-      <button id="modalCloseBtn" type="button" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-xl text-sm transition">
+      <button id="modalCloseBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-xl text-sm transition">
         Aceptar
       </button>
     </div>
@@ -399,13 +411,12 @@
   <!-- Lógica JavaScript -->
   <script>
     // PEGA AQUÍ TU CLAVE DE GOOGLE AI STUDIO (empieza por AIzaSy...)
-    const apiKey = "AIzaSy_AQ.Ab8RN6KxQmUiupB30M-Fe3EUyVXQopXEHq5kYE4UEbIgDlgE9Q"; 
+    const apiKey = "AIzaSyAQ.Ab8RN6KxQmUiupB30M-Fe3EUyVXQopXEHq5kYE4UEbIgDlgE9Q"; 
     let currentStream = null;
     let facingMode = 'user'; 
 
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('snapshotCanvas');
-    const videoContainer = document.getElementById('videoContainer');
     const captureBtn = document.getElementById('captureBtn');
     const switchCamBtn = document.getElementById('switchCamBtn');
     const connectFrontCamBtn = document.getElementById('connectFrontCamBtn');
@@ -418,6 +429,7 @@
     const nativeBackInput = document.getElementById('nativeBackInput');
     const fileInputBackError = document.getElementById('fileInputBackError');
     const liveCamButtons = document.getElementById('liveCamButtons');
+    const cameraPromptDesc = document.getElementById('cameraPromptDesc');
     const scannerOverlay = document.getElementById('scannerOverlay');
     const cameraError = document.getElementById('cameraError');
     const cameraErrorMsg = document.getElementById('cameraErrorMsg');
@@ -446,8 +458,7 @@
     const modalMessage = document.getElementById('modalMessage');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-    // Ícono y manifiesto integrados dentro del mismo archivo HTML
-    (function setupSingleFileIcons() {
+    (function setupMobileInstallManifest() {
       const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <rect width="512" height="512" rx="112" fill="#0f172a"/>
         <circle cx="256" cy="256" r="190" fill="#10b981" fill-opacity="0.18" stroke="#34d399" stroke-width="18"/>
@@ -462,11 +473,19 @@
       const manifestData = {
         name: "LEM2036 - Sistema de Reciclaje para el Futuro",
         short_name: "LEM2036",
+        description: "Sistema de Reciclaje Inteligente - School of the Future - Red Cognita",
         start_url: window.location.href,
         display: "standalone",
         background_color: "#0f172a",
         theme_color: "#0f172a",
-        icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
+        icons: [
+          {
+            src: iconUrl,
+            sizes: "512x512",
+            type: "image/svg+xml",
+            purpose: "any maskable"
+          }
+        ]
       };
 
       const manifestLink = document.getElementById('appManifestLink');
@@ -494,59 +513,73 @@
 
       cameraError.classList.add('hidden');
 
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      const isLocalFile = window.location.protocol === 'file:' || !window.isSecureContext;
+
+      if (isLocalFile || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         startCameraPrompt.classList.remove('hidden');
         if (liveCamButtons) liveCamButtons.classList.add('hidden');
+        if (cameraPromptDesc) {
+          cameraPromptDesc.innerHTML = "Usa los botones amarillos/grises de abajo para abrir directamente la <strong>cámara frontal o trasera</strong> de tu teléfono/tablet:";
+        }
         return;
       }
 
       try {
-        currentStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: facingMode } },
+        const constraints = {
+          video: {
+            facingMode: { ideal: facingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
           audio: false
-        });
+        };
+
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
       } catch (err) {
         try {
           currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         } catch (fallbackErr) {
-          startCameraPrompt.classList.remove('hidden');
+          showCameraError("El navegador bloqueó el acceso automático a la cámara o no se otorgó el permiso. Haz clic en 'Reintentar' y selecciona 'Permitir':");
           return;
         }
       }
 
       try {
         video.srcObject = currentStream;
-        video.classList.toggle('mirror', facingMode === 'user');
+
+        if (facingMode === 'user') {
+          video.classList.add('mirror');
+        } else {
+          video.classList.remove('mirror');
+        }
+
         await video.play();
         startCameraPrompt.classList.add('hidden');
       } catch (playErr) {
-        startCameraPrompt.classList.remove('hidden');
+        showCameraError("No se pudo reproducir el video de la cámara.");
       }
     }
 
-    videoContainer.addEventListener('click', (e) => {
-      if (!currentStream && e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
-        initCamera();
-      }
-    });
+    function showCameraError(msg) {
+      startCameraPrompt.classList.add('hidden');
+      cameraError.classList.remove('hidden');
+      cameraErrorMsg.textContent = msg;
+    }
 
-    switchCamBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    switchCamBtn.addEventListener('click', () => {
       facingMode = (facingMode === 'user') ? 'environment' : 'user';
       initCamera();
     });
 
     if (connectFrontCamBtn) {
-      connectFrontCamBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+      connectFrontCamBtn.addEventListener('click', () => {
         facingMode = 'user';
         initCamera();
       });
     }
 
     if (connectBackCamBtn) {
-      connectBackCamBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+      connectBackCamBtn.addEventListener('click', () => {
         facingMode = 'environment';
         initCamera();
       });
@@ -610,8 +643,8 @@ Leonor Pulgar - Mariana Cabezas 5°E`;
     }
 
     async function analyzeWasteWithGemini(base64ImageData) {
-      if (!apiKey || apiKey.includes("PEGA_AQUI") || !apiKey.startsWith("AIza")) {
-        throw new Error("Falta una API Key válida de Google AI Studio (debe comenzar con AIzaSy...) en la línea 319.");
+      if (!apiKey || apiKey.includes("PEGA_AQUI")) {
+        throw new Error("Falta pegar tu API Key (AIzaSy...) en la línea 321 del código.");
       }
 
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -669,7 +702,7 @@ Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
 
       const data = await res.json();
       const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!jsonText) throw new Error("Respuesta vacía de Gemini");
+      if (!jsonText) throw new Error("Respuesta vacía");
 
       return JSON.parse(jsonText);
     }
@@ -707,8 +740,12 @@ Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
     }
 
     captureBtn.addEventListener('click', () => {
-      if (!currentStream || video.readyState < 2) {
-        initCamera();
+      if (!currentStream || video.readyState !== 4) {
+        if (nativeFrontInput) {
+          nativeFrontInput.click();
+        } else {
+          initCamera();
+        }
         return;
       }
       const snapshot = captureSnapshot();
@@ -772,9 +809,8 @@ Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
     }
     modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
 
-    document.addEventListener('DOMContentLoaded', initCamera);
     window.addEventListener('load', () => {
-      if (!currentStream) initCamera();
+      initCamera();
     });
   </script>
 </body>
