@@ -15,14 +15,12 @@
   <link id="appManifestLink" rel="manifest" href="">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Librería externa auto-Eajustable para generación de Código QR -->
+  <!-- Librería externa auto-ajustable para generación de Código QR -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <style>
-    /* Efecto de espejo para la cámara frontal */
     .mirror {
       transform: scaleX(-1);
     }
-    /* Animación de escáner */
     @keyframes scan {
       0% { top: 0%; opacity: 0.8; }
       50% { top: 90%; opacity: 1; }
@@ -37,7 +35,6 @@
       box-shadow: 0 0 15px #34d399;
       animation: scan 2.5s ease-in-out infinite;
     }
-    /* Estilos para scroll suave */
     ::-webkit-scrollbar {
       width: 6px;
     }
@@ -62,13 +59,15 @@
           </h1>
           <p class="text-base sm:text-xl font-extrabold text-amber-300 mt-2 tracking-wide">Leonor Pulgar - Mariana Cabezas 5°E</p>
           
-          <!-- Botones Pantalla Completa y Aprender centrados y más grandes debajo de los textos -->
           <div class="flex flex-wrap items-center justify-center gap-3 mt-3.5">
             <button id="fullscreenBtn" class="text-sm sm:text-base bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-2.5 px-5 rounded-xl border border-slate-500 shadow-md transition shrink-0 flex items-center gap-2" title="Pantalla Completa">
               <span>⛶ Pantalla Completa</span>
             </button>
             <button id="toggleGuideBtn" class="text-sm sm:text-base bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 font-bold py-2.5 px-5 rounded-xl border border-emerald-500/40 shadow-md transition shrink-0 flex items-center gap-2">
               <span>💡 Aprender</span>
+            </button>
+            <button id="installAppBtn" class="hidden text-sm sm:text-base bg-sky-500/25 hover:bg-sky-500/35 text-sky-300 font-bold py-2.5 px-5 rounded-xl border border-sky-500/40 shadow-md transition shrink-0 flex items-center gap-2">
+              <span>📲 Instalar App</span>
             </button>
           </div>
         </div>
@@ -127,7 +126,7 @@
               </button>
             </div>
 
-            <!-- Botones directos de Cámara Nativa (Funciona siempre incluso enviado por WhatsApp / file://) -->
+            <!-- Botones directos de Cámara Nativa -->
             <div class="flex flex-wrap items-center justify-center gap-2 mt-1 w-full max-w-sm">
               <label class="flex-1 min-w-[140px] cursor-pointer bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-3 px-3 rounded-xl transition text-center shadow-lg flex items-center justify-center gap-1.5">
                 <span>📸 Cámara Frontal (Foto)</span>
@@ -155,4 +154,72 @@
           <!-- Mensaje de Error / Cámara bloqueada -->
           <div id="cameraError" class="hidden absolute inset-0 bg-slate-900/95 p-5 flex flex-col items-center justify-center text-center gap-3 z-20 overflow-y-auto">
             <svg class="w-10 h-10 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h1
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <p class="text-xs sm:text-sm text-slate-200 max-w-sm leading-relaxed" id="cameraErrorMsg">El navegador restringió el video en vivo. Usa los botones de abajo para tomar la foto directamente con tu cámara:</p>
+            
+            <div class="flex flex-col gap-2 w-full max-w-xs mt-1">
+              <div class="flex gap-2">
+                <label class="flex-1 cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs py-3 px-3 rounded-xl transition text-center shadow-md">
+                  📸 Cámara Frontal
+                  <input type="file" id="fileInput" accept="image/*" capture="user" class="hidden">
+                </label>
+                <label class="flex-1 cursor-pointer bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs py-3 px-3 rounded-xl transition text-center shadow-md">
+                  📷 Cámara Trasera
+                  <input type="file" id="fileInputBackError" accept="image/*" capture="environment" class="hidden">
+                </label>
+              </div>
+              <button id="retryCamBtn" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold py-2 px-4 rounded-xl border border-slate-600 transition">
+                Reintentar video en vivo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Controles -->
+        <div class="p-3 bg-slate-800 border-t border-slate-700/60 flex items-center justify-between gap-2">
+          <button id="switchCamBtn" title="Cambiar Cámara" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl transition active:scale-95 border border-slate-600/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.03 8.03 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </button>
+
+          <button id="captureBtn" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 text-base active:scale-98">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l0.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l0.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+              <circle cx="12" cy="13" r="3" stroke-width="2"></circle>
+            </svg>
+            Capturar e Identificar
+          </button>
+
+          <label title="Abrir Galería o Cámara Nativa" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl cursor-pointer transition active:scale-95 flex items-center justify-center border border-slate-600/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <input type="file" id="fileInputIcon" accept="image/*" capture="user" class="hidden">
+          </label>
+        </div>
+      </div>
+
+      <!-- Sección de Resultado -->
+      <div id="resultCard" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl transition-all w-full">
+        <div id="resultHeader" class="p-4 sm:p-5 text-slate-950 font-bold flex items-center justify-between border-b border-black/10">
+          <div class="flex items-center gap-3">
+            <div id="binIconContainer" class="w-12 h-12 rounded-xl bg-black/20 flex items-center justify-center shrink-0">
+              <svg class="w-7 h-7 text-current" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs sm:text-sm uppercase tracking-wider opacity-80 font-bold">Contenedor Recomendado</p>
+              <h2 id="binColorTitle" class="text-2xl sm:text-3xl font-black leading-tight">AMARILLO</h2>
+            </div>
+          </div>
+          <span id="categoryBadge" class="text-xs sm:text-sm px-3 py-1.5 rounded-full bg-black/20 font-bold border border-black/10 shrink-0">
+            Plásticos
+          </span>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <div class="flex items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+            <img id="capturedPreview" class="w-20 h-20 object-cover
