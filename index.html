@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SISTEMA DE RECICLAJE PARA EL FUTURO - LEM2036 - SCHOOL OF THE FUTURE - RED COGNITA</title>
   
-  <!-- Meta etiquetas para Acceso Directo Móvil -->
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,7 +44,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
 
-  <!-- Encabezado Personalizado -->
   <header class="bg-slate-800/90 backdrop-blur border-b border-slate-700 sticky top-0 z-30 px-4 py-4 shadow-md">
     <div class="max-w-5xl mx-auto flex flex-col items-center text-center gap-3">
       <div class="flex flex-col items-center gap-2">
@@ -71,31 +69,23 @@
     </div>
   </header>
 
-  <!-- Contenido Principal -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
 
-    <!-- Banner Ilustrativo: Leonor y Mariana ("Escanea tu basura") -->
     <div class="w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-slate-700 bg-slate-800 relative">
       <div id="imageBannerContainer" class="relative w-full bg-slate-900 overflow-hidden">
         <img src="https://lh3.googleusercontent.com/d/1cYn5a9dTNzOnB8QnrKHxPSUHAI3Av6-1" alt="Leonor y Mariana - Escanea tu basura" class="w-full h-auto block object-cover" onerror="this.onerror=null; this.src='Encabezado.jpeg';">
       </div>
     </div>
 
-    <!-- Espacio de Trabajo Responsive -->
     <div id="scannerWorkspace" class="flex flex-col gap-6 w-full max-w-2xl mx-auto">
       
-      <!-- Tarjeta del Visor de la Cámara -->
       <div id="cameraCard" class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl flex flex-col w-full transition-all duration-300">
-        <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
+        <div id="videoContainer" class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden cursor-pointer">
         
-          <!-- Elemento de Video -->
           <video id="webcam" autoplay playsinline webkit-playsinline muted class="w-full h-full object-cover mirror"></video>
-          
-          <!-- Canvas oculto para procesar foto -->
           <canvas id="snapshotCanvas" class="hidden"></canvas>
 
-          <!-- Capa de Solicitud de Cámara -->
-          <div id="startCameraPrompt" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-5 gap-3 z-10 overflow-y-auto">
+          <div id="startCameraPrompt" class="hidden absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-5 gap-3 z-10 overflow-y-auto">
             <div class="p-3.5 bg-emerald-500/10 rounded-full text-emerald-400 border border-emerald-500/20">
               <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -103,10 +93,9 @@
             </div>
             <h2 class="text-base font-bold text-slate-100">Activar Cámara para Escanear</h2>
             <p id="cameraPromptDesc" class="text-xs text-slate-300 max-w-sm leading-relaxed">
-              Selecciona una opción para encender la cámara de tu dispositivo:
+              Toca el botón verde para encender la cámara en vivo:
             </p>
             
-            <!-- Botones para cámara en vivo -->
             <div id="liveCamButtons" class="flex flex-wrap items-center justify-center gap-2 mt-1">
               <button id="connectFrontCamBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-4 rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-1.5">
                 🎥 Cámara Frontal en Vivo
@@ -116,7 +105,6 @@
               </button>
             </div>
 
-            <!-- Botones directos de Cámara Nativa -->
             <div class="flex flex-wrap items-center justify-center gap-2 mt-1 w-full max-w-sm">
               <label class="flex-1 min-w-[140px] cursor-pointer bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-3 px-3 rounded-xl transition text-center shadow-lg flex items-center justify-center gap-1.5">
                 <span>📸 Cámara Frontal (Foto)</span>
@@ -129,7 +117,6 @@
             </div>
           </div>
 
-          <!-- Capa de Escaneo (Animación) -->
           <div id="scannerOverlay" class="absolute inset-0 hidden bg-emerald-950/20 pointer-events-none z-20">
             <div class="scanner-line"></div>
             <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
@@ -141,9 +128,12 @@
             </div>
           </div>
 
-          <!-- Mensaje de Error / Cámara bloqueada -->
           <div id="cameraError" class="hidden absolute inset-0 bg-slate-900/95 p-5 flex flex-col items-center justify-center text-center gap-3 z-20 overflow-y-auto">
+            <svg class="w-10 h-10 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
             <p class="text-xs sm:text-sm text-slate-200 max-w-sm leading-relaxed" id="cameraErrorMsg">El navegador restringió el video en vivo. Usa los botones de abajo para tomar la foto directamente con tu cámara:</p>
+            
             <div class="flex flex-col gap-2 w-full max-w-xs mt-1">
               <div class="flex gap-2">
                 <label class="flex-1 cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs py-3 px-3 rounded-xl transition text-center shadow-md">
@@ -162,7 +152,6 @@
           </div>
         </div>
 
-        <!-- Barra de Controles -->
         <div class="p-3 bg-slate-800 border-t border-slate-700/60 flex items-center justify-between gap-2">
           <button id="switchCamBtn" type="button" title="Cambiar Cámara" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl transition active:scale-95 border border-slate-600/50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +176,6 @@
         </div>
       </div>
 
-      <!-- Sección de Resultado -->
       <div id="resultCard" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl transition-all w-full">
         <div id="resultHeader" class="p-4 sm:p-5 text-slate-950 font-bold flex items-center justify-between border-b border-black/10">
           <div class="flex items-center gap-3">
@@ -240,7 +228,6 @@
             <div id="ecoTip" class="bg-teal-950/30 border border-teal-500/30 p-4 rounded-xl text-base sm:text-lg text-teal-100 leading-relaxed font-medium"></div>
           </div>
 
-          <!-- CÓDIGO QR EN TEXTO -->
           <div class="bg-slate-900/80 p-6 rounded-xl border border-slate-700/80 flex flex-col items-center text-center gap-3 mt-2">
             <div class="flex items-center gap-2 text-base sm:text-lg font-bold text-emerald-400 uppercase tracking-wider">
               <span>📱 Escanea la Ficha Digital</span>
@@ -248,9 +235,11 @@
             <p class="text-sm sm:text-base text-slate-300">
               Escanea el código QR con tu celular para llevarte toda la información de este residuo en texto.
             </p>
+            
             <div class="p-4 bg-white rounded-2xl shadow-xl my-2 flex items-center justify-center min-w-[220px] min-h-[220px]">
               <div id="qrcode" class="flex items-center justify-center"></div>
             </div>
+
             <span class="text-sm sm:text-base font-bold text-amber-300 font-sans mt-1">LEM2036 - Leonor Pulgar / Mariana Cabezas 5°E</span>
           </div>
 
@@ -260,7 +249,6 @@
         </div>
       </div>
 
-      <!-- Guía Educativa -->
       <div id="guideSection" class="hidden bg-slate-800 rounded-2xl border border-slate-700 p-4 sm:p-6 space-y-4 shadow-2xl">
         <div class="flex items-center justify-between border-b border-slate-700 pb-3">
           <div>
@@ -381,7 +369,6 @@
     </div>
   </main>
 
-  <!-- Modal Auxiliar -->
   <div id="customModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full text-center space-y-3 shadow-2xl">
       <h3 id="modalTitle" class="text-lg font-bold text-slate-100">Aviso</h3>
@@ -392,7 +379,6 @@
     </div>
   </div>
 
-  <!-- Lógica JavaScript -->
   <script>
     const apiKey = "AQ.Ab8RN6KxQmUiupB30M-Fe3EUyVXQopXEHq5kYE4UEbIgDlgE9Q"; 
     let currentStream = null;
@@ -400,6 +386,7 @@
 
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('snapshotCanvas');
+    const videoContainer = document.getElementById('videoContainer');
     const captureBtn = document.getElementById('captureBtn');
     const switchCamBtn = document.getElementById('switchCamBtn');
     const connectFrontCamBtn = document.getElementById('connectFrontCamBtn');
@@ -412,7 +399,6 @@
     const nativeBackInput = document.getElementById('nativeBackInput');
     const fileInputBackError = document.getElementById('fileInputBackError');
     const liveCamButtons = document.getElementById('liveCamButtons');
-    const cameraPromptDesc = document.getElementById('cameraPromptDesc');
     const scannerOverlay = document.getElementById('scannerOverlay');
     const cameraError = document.getElementById('cameraError');
     const cameraErrorMsg = document.getElementById('cameraErrorMsg');
@@ -441,7 +427,7 @@
     const modalMessage = document.getElementById('modalMessage');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-    (function setupMobileInstallManifest() {
+    (function setupSingleFileIcons() {
       const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <rect width="512" height="512" rx="112" fill="#0f172a"/>
         <circle cx="256" cy="256" r="190" fill="#10b981" fill-opacity="0.18" stroke="#34d399" stroke-width="18"/>
@@ -456,19 +442,11 @@
       const manifestData = {
         name: "LEM2036 - Sistema de Reciclaje para el Futuro",
         short_name: "LEM2036",
-        description: "Sistema de Reciclaje Inteligente - School of the Future - Red Cognita",
         start_url: window.location.href,
         display: "standalone",
         background_color: "#0f172a",
         theme_color: "#0f172a",
-        icons: [
-          {
-            src: iconUrl,
-            sizes: "512x512",
-            type: "image/svg+xml",
-            purpose: "any maskable"
-          }
-        ]
+        icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
       };
 
       const manifestLink = document.getElementById('appManifestLink');
@@ -496,28 +474,17 @@
 
       cameraError.classList.add('hidden');
 
-      const isLocalFile = window.location.protocol === 'file:' || !window.isSecureContext;
-
-      if (isLocalFile || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         startCameraPrompt.classList.remove('hidden');
         if (liveCamButtons) liveCamButtons.classList.add('hidden');
-        if (cameraPromptDesc) {
-          cameraPromptDesc.innerHTML = "Usa los botones amarillos/grises de abajo para abrir directamente la <strong>cámara frontal o trasera</strong> de tu teléfono/tablet:";
-        }
         return;
       }
 
       try {
-        const constraints = {
-          video: {
-            facingMode: { ideal: facingMode },
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          },
+        currentStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: facingMode } },
           audio: false
-        };
-
-        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        });
       } catch (err) {
         try {
           currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
@@ -529,13 +496,7 @@
 
       try {
         video.srcObject = currentStream;
-
-        if (facingMode === 'user') {
-          video.classList.add('mirror');
-        } else {
-          video.classList.remove('mirror');
-        }
-
+        video.classList.toggle('mirror', facingMode === 'user');
         await video.play();
         startCameraPrompt.classList.add('hidden');
       } catch (playErr) {
@@ -543,26 +504,29 @@
       }
     }
 
-    function showCameraError(msg) {
-      startCameraPrompt.classList.add('hidden');
-      cameraError.classList.remove('hidden');
-      cameraErrorMsg.textContent = msg;
-    }
+    videoContainer.addEventListener('click', (e) => {
+      if (!currentStream && e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+        initCamera();
+      }
+    });
 
-    switchCamBtn.addEventListener('click', () => {
+    switchCamBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       facingMode = (facingMode === 'user') ? 'environment' : 'user';
       initCamera();
     });
 
     if (connectFrontCamBtn) {
-      connectFrontCamBtn.addEventListener('click', () => {
+      connectFrontCamBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         facingMode = 'user';
         initCamera();
       });
     }
 
     if (connectBackCamBtn) {
-      connectBackCamBtn.addEventListener('click', () => {
+      connectBackCamBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         facingMode = 'environment';
         initCamera();
       });
@@ -722,12 +686,8 @@ Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
     }
 
     captureBtn.addEventListener('click', () => {
-      if (!currentStream || video.readyState !== 4) {
-        if (nativeFrontInput) {
-          nativeFrontInput.click();
-        } else {
-          initCamera();
-        }
+      if (!currentStream || video.readyState < 2) {
+        initCamera();
         return;
       }
       const snapshot = captureSnapshot();
@@ -791,8 +751,9 @@ Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
     }
     modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
 
+    document.addEventListener('DOMContentLoaded', initCamera);
     window.addEventListener('load', () => {
-      initCamera();
+      if (!currentStream) initCamera();
     });
   </script>
 </body>
