@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SISTEMA DE RECICLAJE PARA EL FUTURO - LEM2036</title>
+  
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <style>
@@ -14,152 +19,414 @@
       100% { top: 0%; opacity: 0.8; }
     }
     .scanner-line {
-      position: absolute; left: 0; right: 0; height: 4px;
+      position: absolute;
+      left: 0; right: 0; height: 4px;
       background: linear-gradient(90deg, transparent, #34d399, transparent);
       box-shadow: 0 0 15px #34d399;
       animation: scan 2.5s ease-in-out infinite;
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
 
-  <header class="bg-slate-800/90 border-b border-slate-700 sticky top-0 z-30 px-4 py-4 shadow-md text-center">
-    <h1 class="font-black text-base sm:text-xl tracking-wider text-white leading-snug">
-      SISTEMA DE RECICLAJE PARA EL FUTURO<br>
-      <span class="text-emerald-400 text-xl sm:text-3xl font-extrabold tracking-widest">LEM2036</span><br>
-      <span class="text-xs sm:text-sm font-bold text-slate-200">SCHOOL OF THE FUTURE • RED COGNITA</span>
-    </h1>
-    <p class="text-sm sm:text-base font-extrabold text-amber-300 mt-1">Leonor Pulgar - Mariana Cabezas 5°E</p>
+  <!-- Encabezado -->
+  <header class="bg-slate-800/90 backdrop-blur border-b border-slate-700 sticky top-0 z-30 px-4 py-4 shadow-md">
+    <div class="max-w-5xl mx-auto flex flex-col items-center text-center gap-2">
+      <h1 class="font-black text-base sm:text-xl tracking-wider text-white leading-snug">
+        SISTEMA DE RECICLAJE PARA EL FUTURO<br>
+        <span class="text-emerald-400 text-xl sm:text-3xl font-extrabold tracking-widest">LEM2036</span><br>
+        <span class="text-sm sm:text-base font-bold text-slate-200">SCHOOL OF THE FUTURE</span> • 
+        <span class="text-xs sm:text-sm font-semibold text-teal-300">RED COGNITA</span>
+      </h1>
+      <p class="text-sm sm:text-lg font-extrabold text-amber-300">Leonor Pulgar - Mariana Cabezas 5°E</p>
+      
+      <div class="flex flex-wrap items-center justify-center gap-3 mt-2">
+        <button id="fullscreenBtn" type="button" class="text-xs sm:text-sm bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-2 px-4 rounded-xl border border-slate-500 transition">
+          ⛶ Pantalla Completa
+        </button>
+        <button id="toggleGuideBtn" type="button" class="text-xs sm:text-sm bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-300 font-bold py-2 px-4 rounded-xl border border-emerald-500/40 transition">
+          💡 Aprender
+        </button>
+      </div>
+    </div>
   </header>
 
-  <main class="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col gap-5">
-    
+  <!-- Contenido Principal -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+
+    <!-- Banner -->
+    <div class="w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-slate-700 bg-slate-800">
+      <img src="https://drive.google.com/thumbnail?id=1cYn5a9dTNzOnB8QnrKHxPSUHAI3Av6-1&sz=w1000" alt="Leonor y Mariana" class="w-full h-auto block object-cover" onerror="this.style.display='none';">
+    </div>
+
     <!-- Cuadro de Cámara -->
-    <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl flex flex-col w-full">
-      <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
+    <div class="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl flex flex-col w-full">
         
-        <video id="webcam" autoplay playsinline webkit-playsinline muted class="w-full h-full object-cover mirror"></video>
-        <canvas id="snapshotCanvas" class="hidden"></canvas>
+        <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
+          <!-- Video en vivo dentro del cuadro -->
+          <video id="webcam" autoplay playsinline webkit-playsinline muted class="w-full h-full object-cover mirror"></video>
+          <canvas id="snapshotCanvas" class="hidden"></canvas>
 
-        <!-- Pantalla de inicio -->
-        <div id="startCameraOverlay" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-5 gap-3 z-10">
-          <div class="p-3.5 bg-emerald-500/20 rounded-full text-emerald-400 border border-emerald-400/40">
-            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-            </svg>
+          <!-- Marco guía cuando el video está activo -->
+          <div id="liveFrameGuide" class="hidden absolute inset-6 border-2 border-dashed border-emerald-400/50 rounded-2xl pointer-events-none flex items-end justify-center pb-3">
+            <span class="bg-slate-950/75 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
+              Centra el residuo dentro del cuadro
+            </span>
           </div>
-          <h2 class="text-lg font-black text-white">Cámara Frontal LEM2036</h2>
-          <p class="text-xs sm:text-sm text-slate-300 max-w-sm leading-relaxed">
-            Toca el botón verde para autorizar y encender la cámara dentro del cuadro:
-          </p>
-          <button id="btnStartCam" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 px-7 rounded-xl shadow-lg text-base transition active:scale-95">
-            🎥 Encender Cámara Frontal
-          </button>
-          <div id="errorDisplay" class="hidden w-full max-w-sm bg-rose-950/80 border border-rose-500 rounded-xl p-3 text-xs text-rose-200"></div>
-        </div>
 
-        <!-- Overlay Escaneo -->
-        <div id="scannerOverlay" class="absolute inset-0 hidden bg-emerald-950/20 pointer-events-none z-20">
-          <div class="scanner-line"></div>
-          <div class="absolute inset-0 flex items-center justify-center bg-black/50">
-            <div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-4 text-center flex flex-col items-center gap-2">
-              <div class="w-8 h-8 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-              <p class="text-sm font-semibold text-emerald-400">Analizando residuo...</p>
+          <!-- Capa de activación (Modo Video en Vivo) -->
+          <div id="startCameraOverlay" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-6 gap-4 z-10 cursor-pointer">
+            <div class="p-4 bg-emerald-500/20 rounded-full text-emerald-400 border border-emerald-400/40 animate-pulse">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="space-y-2 max-w-md">
+              <h2 id="camOverlayTitle" class="text-lg sm:text-xl font-black text-white">Activar Cámara Frontal</h2>
+              <p id="camStatusText" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Toca el botón verde para encender la cámara en vivo dentro del cuadro.
+              </p>
+            </div>
+            <button id="enableInlineCamBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 px-6 rounded-xl shadow-lg text-sm transition">
+              🎥 Encender Cámara en Vivo
+            </button>
+            <!-- Botón de respaldo automático si el navegador bloquea el video en vivo -->
+            <label id="fallbackNativeBtn" for="nativeFrontInput" class="hidden cursor-pointer bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-lg text-sm transition">
+              📸 Tomar Foto con Cámara Frontal
+            </label>
+          </div>
+
+          <!-- Inputs ocultos de respaldo -->
+          <input type="file" id="nativeFrontInput" accept="image/*" capture="user" class="hidden">
+          <input type="file" id="galleryInput" accept="image/*" class="hidden">
+
+          <!-- Capa de Escaneo -->
+          <div id="scannerOverlay" class="absolute inset-0 hidden bg-emerald-950/20 pointer-events-none z-20">
+            <div class="scanner-line"></div>
+            <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+              <div class="bg-slate-900/90 border border-emerald-500/50 rounded-xl p-4 text-center shadow-2xl flex flex-col items-center gap-2">
+                <div class="w-8 h-8 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-sm font-semibold text-emerald-400">Analizando residuo con IA...</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Controles -->
-      <div class="p-3 bg-slate-800 border-t border-slate-700 flex items-center justify-between gap-2">
-        <button id="switchCamBtn" type="button" class="p-3 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-xl font-bold text-xs border border-slate-600">
-          🔄 Girar
-        </button>
-        <button id="captureBtn" type="button" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-lg text-base">
-          📸 Escanear Residuo
-        </button>
-        <label for="galleryInput" class="p-3 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl cursor-pointer border border-slate-600 text-xs font-bold">
-          🖼️ Foto
-          <input type="file" id="galleryInput" accept="image/*" class="hidden">
-        </label>
-      </div>
-    </div>
+        <!-- Barra de Controles -->
+        <div class="p-3 bg-slate-800 border-t border-slate-700/60 flex items-center justify-between gap-2">
+          <button id="switchCamBtn" type="button" title="Cambiar Cámara (Frontal / Trasera)" class="p-3 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-xl transition active:scale-95 border border-slate-600 flex items-center gap-1.5 text-xs font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.03 8.03 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span class="hidden sm:inline">Girar</span>
+          </button>
 
-    <!-- Resultado -->
-    <div id="resultCard" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl w-full">
-      <div id="resultHeader" class="p-4 text-slate-950 font-bold flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase opacity-80">Contenedor Recomendado</p>
-          <h2 id="binColorTitle" class="text-2xl font-black">AMARILLO</h2>
+          <button id="captureBtn" type="button" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base active:scale-98">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l0.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l0.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+              <circle cx="12" cy="13" r="3" stroke-width="2"></circle>
+            </svg>
+            Escanear Residuo
+          </button>
+
+          <label for="galleryInput" title="Subir imagen desde galería" class="p-3 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl cursor-pointer transition active:scale-95 flex items-center justify-center border border-slate-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </label>
         </div>
-        <span id="categoryBadge" class="text-xs px-3 py-1.5 rounded-full bg-black/20 font-bold">Plásticos</span>
       </div>
 
-      <div class="p-5 space-y-4">
-        <div class="flex items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700">
-          <img id="capturedPreview" class="w-20 h-20 object-cover rounded-lg border border-slate-700" src="" alt="Captura">
+      <!-- Resultado -->
+      <div id="resultCard" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl w-full">
+        <div id="resultHeader" class="p-4 sm:p-5 text-slate-950 font-bold flex items-center justify-between border-b border-black/10">
           <div>
-            <span class="text-xs text-slate-400 uppercase">Residuo detectado:</span>
-            <h3 id="detectedItemName" class="text-lg font-black text-slate-100">Residuo</h3>
-            <p class="text-xs text-amber-300 mt-1">⏳ Descomposición: <strong id="decompTimeText">-</strong></p>
+            <p class="text-xs uppercase tracking-wider opacity-80 font-bold">Contenedor Recomendado</p>
+            <h2 id="binColorTitle" class="text-2xl sm:text-3xl font-black leading-tight">AMARILLO</h2>
           </div>
+          <span id="categoryBadge" class="text-xs sm:text-sm px-3 py-1.5 rounded-full bg-black/20 font-bold">Plásticos</span>
         </div>
 
-        <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700 text-sm text-slate-100">
-          <strong class="text-emerald-400 block mb-1">🛠️ Cómo prepararlo:</strong>
-          <span id="prepInstructions"></span>
-        </div>
+        <div class="p-5 space-y-4">
+          <div class="flex items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+            <img id="capturedPreview" class="w-20 h-20 object-cover rounded-lg border border-slate-700 shrink-0" src="" alt="Captura">
+            <div class="flex-1 min-w-0">
+              <span class="text-xs text-slate-400 uppercase font-medium">Residuo detectado:</span>
+              <h3 id="detectedItemName" class="text-lg sm:text-xl font-black text-slate-100 truncate mt-0.5">Residuo</h3>
+              <div class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-amber-300 bg-amber-950/50 px-2.5 py-1 rounded-md border border-amber-500/30">
+                <span>⏳ Descomposición:</span>
+                <strong id="decompTimeText">-</strong>
+              </div>
+            </div>
+          </div>
 
-        <div class="bg-amber-950/30 border border-amber-500/30 p-4 rounded-xl text-sm text-amber-100">
-          <strong class="text-amber-400 block mb-1">💡 Dato Entretenido LEM2036:</strong>
-          <span id="funFactText"></span>
-        </div>
+          <div class="space-y-1">
+            <p class="text-sm font-bold text-emerald-400 uppercase">🛠️ Cómo prepararlo</p>
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 text-base text-slate-100" id="prepInstructions"></div>
+          </div>
 
-        <div class="bg-teal-950/30 border border-teal-500/30 p-4 rounded-xl text-sm text-teal-100">
-          <strong class="text-teal-400 block mb-1">🌿 Impacto Ambiental:</strong>
-          <span id="ecoTip"></span>
-        </div>
+          <div class="space-y-1">
+            <p class="text-sm font-bold text-amber-400 uppercase">💡 Dato Entretenido LEM2036</p>
+            <div class="bg-amber-950/30 border border-amber-500/30 p-4 rounded-xl text-base text-amber-100" id="funFactText"></div>
+          </div>
 
-        <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-700 flex flex-col items-center text-center gap-2">
-          <span class="text-sm font-bold text-emerald-400 uppercase">📱 Ficha Digital QR</span>
-          <div class="p-3 bg-white rounded-xl my-1"><div id="qrcode"></div></div>
-          <span class="text-xs font-bold text-amber-300">LEM2036 - Leonor Pulgar / Mariana Cabezas 5°E</span>
-        </div>
+          <div class="space-y-1">
+            <p class="text-sm font-bold text-teal-400 uppercase">🌿 Impacto Ambiental</p>
+            <div id="ecoTip" class="bg-teal-950/30 border border-teal-500/30 p-4 rounded-xl text-base text-teal-100"></div>
+          </div>
 
-        <button id="resetBtn" type="button" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl">
-          Escanear otro residuo
-        </button>
+          <!-- QR -->
+          <div class="bg-slate-900/80 p-6 rounded-xl border border-slate-700/80 flex flex-col items-center text-center gap-3">
+            <span class="text-base font-bold text-emerald-400 uppercase">📱 Escanea la Ficha Digital</span>
+            <div class="p-4 bg-white rounded-2xl shadow-xl my-1 flex items-center justify-center min-w-[200px] min-h-[200px]">
+              <div id="qrcode"></div>
+            </div>
+            <span class="text-xs font-bold text-amber-300">LEM2036 - Leonor Pulgar / Mariana Cabezas 5°E</span>
+          </div>
+
+          <button id="resetBtn" type="button" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 rounded-xl transition text-base">
+            Escanear otro residuo
+          </button>
+        </div>
       </div>
+
+      <!-- Guía Educativa -->
+      <div id="guideSection" class="hidden bg-slate-800 rounded-2xl border border-slate-700 p-5 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+          <h3 class="font-bold text-base text-slate-100">🎓 Centro de Aprendizaje LEM2036</h3>
+          <button id="closeGuideBtn" type="button" class="p-1.5 text-slate-400 hover:text-white bg-slate-700 rounded-lg text-xs">✕ Cerrar</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-yellow-500/30"><strong class="text-yellow-400">Amarillo:</strong> Plásticos PET, latas y envases plásticos.</div>
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-blue-500/30"><strong class="text-blue-400">Azul:</strong> Papeles, cartones y Tetrapak.</div>
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-emerald-500/30"><strong class="text-emerald-400">Verde:</strong> Botellas, frascos y envases de vidrio.</div>
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-red-500/30"><strong class="text-red-400">Rojo:</strong> Pilas, celulares, cables y residuos peligrosos.</div>
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-gray-400/30 md:col-span-2"><strong class="text-gray-300">Gris:</strong> Desperdicio orgánico y no reciclable.</div>
+        </div>
+      </div>
+
     </div>
   </main>
 
+  <!-- Modal Auxiliar -->
+  <div id="customModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full text-center space-y-3 shadow-2xl">
+      <h3 id="modalTitle" class="text-lg font-bold text-slate-100">Aviso</h3>
+      <p id="modalMessage" class="text-sm text-slate-300"></p>
+      <button id="modalCloseBtn" type="button" class="w-full bg-slate-700 text-white font-semibold py-2 rounded-xl text-sm">Aceptar</button>
+    </div>
+  </div>
+
   <script>
-    // ◀◀◀ LÍNEA 140: PEGA AQUÍ TU CLAVE DE GOOGLE AI STUDIO (empieza con "AIzaSy...") ◀◀◀
-    const API_KEY = "AIzaSy_PEGA_AQUI_TU_CLAVE";
+    // API Key incrustada permanentemente
+    const apiKey = "AQ.Ab8RN6J5ucPw0z7Ag_-1VLwLbxouDUG51665OTHthnN4tlF9Rw";
+    let currentStream = null;
+    let facingMode = 'user';
+    let iframeBlocked = false;
 
-    let stream = null;
-    let facingMode = "user";
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('snapshotCanvas');
+    const startCameraOverlay = document.getElementById('startCameraOverlay');
+    const enableInlineCamBtn = document.getElementById('enableInlineCamBtn');
+    const fallbackNativeBtn = document.getElementById('fallbackNativeBtn');
+    const camOverlayTitle = document.getElementById('camOverlayTitle');
+    const camStatusText = document.getElementById('camStatusText');
+    const liveFrameGuide = document.getElementById('liveFrameGuide');
+    const switchCamBtn = document.getElementById('switchCamBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const nativeFrontInput = document.getElementById('nativeFrontInput');
+    const galleryInput = document.getElementById('galleryInput');
+    const scannerOverlay = document.getElementById('scannerOverlay');
 
-    const video = document.getElementById("webcam");
-    const canvas = document.getElementById("snapshotCanvas");
-    const overlay = document.getElementById("startCameraOverlay");
-    const btnStart = document.getElementById("btnStartCam");
-    const errorBox = document.getElementById("errorDisplay");
-    const switchBtn = document.getElementById("switchCamBtn");
-    const captureBtn = document.getElementById("captureBtn");
-    const galleryInput = document.getElementById("galleryInput");
-    const scannerOverlay = document.getElementById("scannerOverlay");
-    const resultCard = document.getElementById("resultCard");
+    const resultCard = document.getElementById('resultCard');
+    const resultHeader = document.getElementById('resultHeader');
+    const binColorTitle = document.getElementById('binColorTitle');
+    const categoryBadge = document.getElementById('categoryBadge');
+    const detectedItemName = document.getElementById('detectedItemName');
+    const decompTimeText = document.getElementById('decompTimeText');
+    const prepInstructions = document.getElementById('prepInstructions');
+    const funFactText = document.getElementById('funFactText');
+    const ecoTip = document.getElementById('ecoTip');
+    const capturedPreview = document.getElementById('capturedPreview');
+    const resetBtn = document.getElementById('resetBtn');
 
-    function abrirCamara() {
-      errorBox.classList.add("hidden");
+    const customModal = document.getElementById('customModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    async function startInlineCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(t => t.stop());
+        currentStream = null;
+      }
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        errorBox.classList.remove("hidden");
-        errorBox.textContent = "Este navegador no permite acceso a la cámara. Abre el enlace directamente en Google Chrome o Safari (no dentro de WhatsApp).";
+        activateIframeFallbackMode();
         return;
       }
 
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
+      try {
+        currentStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: facingMode },
+          audio: false
+        });
+      } catch (firstErr) {
+        try {
+          currentStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+          });
+        } catch (err) {
+          // Ante cualquier bloqueo del navegador o iframe, habilita la captura directa sin quedarse trabado
+          activateIframeFallbackMode();
+          return;
+        }
       }
+
+      try {
+        video.srcObject = currentStream;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('autoplay', '');
+        video.muted = true;
+        video.classList.toggle('mirror', facingMode === 'user');
+        
+        await video.play();
+        iframeBlocked = false;
+        startCameraOverlay.classList.add('hidden');
+        liveFrameGuide.classList.remove('hidden');
+      } catch (playErr) {
+        activateIframeFallbackMode();
+      }
+    }
+
+    function activateIframeFallbackMode() {
+      iframeBlocked = true;
+      startCameraOverlay.classList.remove('hidden');
+      liveFrameGuide.classList.add('hidden');
+      enableInlineCamBtn.classList.add('hidden');
+      fallbackNativeBtn.classList.remove('hidden');
+      camOverlayTitle.textContent = "Cámara Frontal Lista";
+      camStatusText.innerHTML = "El navegador restringe el video continuo en esta ventana. Presiona el botón amarillo para capturar directamente con tu cámara frontal:";
+    }
+
+    window.addEventListener('load', startInlineCamera);
+    enableInlineCamBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startInlineCamera();
+    });
+
+    switchCamBtn.addEventListener('click', () => {
+      facingMode = (facingMode === 'user') ? 'environment' : 'user';
+      startInlineCamera();
+    });
+
+    function captureVideoFrame() {
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      if (facingMode === 'user') {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.85);
+    }
+
+    captureBtn.addEventListener('click', () => {
+      if (currentStream && video.readyState >= 2) {
+        processImage(captureVideoFrame());
+      } else if (iframeBlocked) {
+        nativeFrontInput.click();
+      } else {
+        startInlineCamera();
+      }
+    });
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => processImage(ev.target.result);
+      reader.readAsDataURL(file);
+    }
+
+    nativeFrontInput.addEventListener('change', handleFileUpload);
+    galleryInput.addEventListener('change', handleFileUpload);
+
+    function generateInfoQRCode(analysis) {
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+      const text = `LEM2036 - FICHA DE RECICLAJE\nObjeto: ${analysis.item_detected}\nContenedor: ${analysis.bin_color}\nPreparación: ${analysis.instructions}\nDescomposición: ${analysis.decomposition_time}`;
+      if (typeof qrcode === 'function') {
+        const qr = qrcode(0, 'M');
+        qr.addData(unescape(encodeURIComponent(text)));
+        qr.make();
+        qrContainer.innerHTML = qr.createImgTag(5, 5);
+      }
+    }
+
+    async function analyzeWasteWithGemini(base64ImageData) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const rawBase64 = base64ImageData.split(',')[1];
+      const promptText = `Clasifica este residuo según LEM2036 (AMARILLO: plásticos/latas, AZUL: papel/cartón/tetrapak, VERDE: vidrio, ROJO: peligrosos/electrónicos, GRIS: orgánico/no reciclable). Responde SOLO JSON: {"item_detected":"","category":"","bin_color":"","bin_hex":"","bin_text_color":"#FFFFFF","instructions":"","decomposition_time":"","fun_fact":"","environmental_tip":""}`;
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: promptText }, { inlineData: { mimeType: "image/jpeg", data: rawBase64 } }] }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      return JSON.parse(data.candidates[0].content.parts[0].text);
+    }
+
+    async function processImage(dataUrl) {
+      scannerOverlay.classList.remove('hidden');
+      try {
+        const analysis = await analyzeWasteWithGemini(dataUrl);
+        capturedPreview.src = dataUrl;
+        binColorTitle.textContent = analysis.bin_color || "CONTENEDOR";
+        categoryBadge.textContent = analysis.category || "Residuo";
+        detectedItemName.textContent = analysis.item_detected || "Objeto";
+        decompTimeText.textContent = analysis.decomposition_time || "Variable";
+        prepInstructions.textContent = analysis.instructions || "Separar adecuadamente.";
+        funFactText.textContent = analysis.fun_fact || "";
+        ecoTip.textContent = analysis.environmental_tip || "";
+        resultHeader.style.backgroundColor = analysis.bin_hex || '#2563EB';
+        resultHeader.style.color = analysis.bin_text_color || '#FFFFFF';
+        resultCard.classList.remove('hidden');
+        generateInfoQRCode(analysis);
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        modalTitle.textContent = "Error al Analizar";
+        modalMessage.textContent = "No se pudo analizar la imagen: " + err.message;
+        customModal.classList.remove('hidden');
+      } finally {
+        scannerOverlay.classList.add('hidden');
+      }
+    }
+
+    resetBtn.addEventListener('click', () => {
+      resultCard.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen();
+    });
+
+    document.getElementById('toggleGuideBtn').addEventListener('click', () => document.getElementById('guideSection').classList.toggle('hidden'));
+    document.getElementById('closeGuideBtn').addEventListener('click', () => document.getElementById('guideSection').classList.add('hidden'));
+    modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
+  </script>
+</body>
+</html>
