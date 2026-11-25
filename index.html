@@ -174,4 +174,608 @@
 
           <button id="captureBtn" type="button" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 text-base active:scale-98">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l0.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l0.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l0.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l0.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+              <circle cx="12" cy="13" r="3" stroke-width="2"></circle>
+            </svg>
+            Capturar e Identificar
+          </button>
+
+          <label title="Abrir Galería o Cámara Nativa" class="p-3 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-xl cursor-pointer transition active:scale-95 flex items-center justify-center border border-slate-600/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <input type="file" id="fileInputIcon" accept="image/*" class="hidden">
+          </label>
+        </div>
+      </div>
+
+      <!-- Sección de Resultado -->
+      <div id="resultCard" class="hidden bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl transition-all w-full">
+        <div id="resultHeader" class="p-4 sm:p-5 text-slate-950 font-bold flex items-center justify-between border-b border-black/10">
+          <div class="flex items-center gap-3">
+            <div id="binIconContainer" class="w-12 h-12 rounded-xl bg-black/20 flex items-center justify-center shrink-0">
+              <svg class="w-7 h-7 text-current" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs sm:text-sm uppercase tracking-wider opacity-80 font-bold">Contenedor Recomendado</p>
+              <h2 id="binColorTitle" class="text-2xl sm:text-3xl font-black leading-tight">AMARILLO</h2>
+            </div>
+          </div>
+          <span id="categoryBadge" class="text-xs sm:text-sm px-3 py-1.5 rounded-full bg-black/20 font-bold border border-black/10 shrink-0">
+            Plásticos
+          </span>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <div class="flex items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+            <img id="capturedPreview" class="w-20 h-20 object-cover rounded-lg border border-slate-700 shrink-0" src="" alt="Captura">
+            <div class="flex-1 min-w-0">
+              <span class="text-xs sm:text-sm text-slate-400 uppercase tracking-wide font-medium">Residuo detectado:</span>
+              <h3 id="detectedItemName" class="text-lg sm:text-xl font-black text-slate-100 leading-tight truncate mt-0.5">Botella de Bebida</h3>
+              <div class="mt-2 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-amber-300 bg-amber-950/50 px-2.5 py-1 rounded-md border border-amber-500/30">
+                <span>⏳ Descomposición:</span>
+                <strong id="decompTimeText">450 años</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <p class="text-base sm:text-lg font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+              <span>🛠️</span> Cómo prepararlo
+            </p>
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 text-base sm:text-lg text-slate-100 leading-relaxed font-medium" id="prepInstructions"></div>
+          </div>
+
+          <div class="space-y-1.5">
+            <p class="text-base sm:text-lg font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <span>💡</span> Dato Entretenido LEM2036
+            </p>
+            <div class="bg-amber-950/30 border border-amber-500/30 p-4 rounded-xl text-base sm:text-lg text-amber-100 leading-relaxed font-medium" id="funFactText"></div>
+          </div>
+
+          <div class="space-y-1.5">
+            <p class="text-base sm:text-lg font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2">
+              <span>🌿</span> Impacto Ambiental
+            </p>
+            <div id="ecoTip" class="bg-teal-950/30 border border-teal-500/30 p-4 rounded-xl text-base sm:text-lg text-teal-100 leading-relaxed font-medium"></div>
+          </div>
+
+          <!-- CÓDIGO QR EN TEXTO -->
+          <div class="bg-slate-900/80 p-6 rounded-xl border border-slate-700/80 flex flex-col items-center text-center gap-3 mt-2">
+            <div class="flex items-center gap-2 text-base sm:text-lg font-bold text-emerald-400 uppercase tracking-wider">
+              <span>📱 Escanea la Ficha Digital</span>
+            </div>
+            <p class="text-sm sm:text-base text-slate-300">
+              Escanea el código QR con tu celular para llevarte toda la información de este residuo en texto.
+            </p>
+            
+            <div class="p-4 bg-white rounded-2xl shadow-xl my-2 flex items-center justify-center min-w-[220px] min-h-[220px]">
+              <div id="qrcode" class="flex items-center justify-center"></div>
+            </div>
+
+            <span class="text-sm sm:text-base font-bold text-amber-300 font-sans mt-1">LEM2036 - Leonor Pulgar / Mariana Cabezas 5°E</span>
+          </div>
+
+          <button id="resetBtn" type="button" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold py-3 rounded-xl transition text-base mt-2">
+            Escanear otro residuo
+          </button>
+        </div>
+      </div>
+
+      <!-- Guía Educativa y Centro de Información LEM2036 -->
+      <div id="guideSection" class="hidden bg-slate-800 rounded-2xl border border-slate-700 p-4 sm:p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+          <div>
+            <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
+              <span>🎓 Centro de Aprendizaje LEM2036</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">Aprende sobre el reciclaje inteligente y datos fascinantes</p>
+          </div>
+          <button id="closeGuideBtn" type="button" class="p-1.5 text-slate-400 hover:text-white bg-slate-700 rounded-lg text-xs transition">
+            ✕ Cerrar
+          </button>
+        </div>
+
+        <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 text-xs font-semibold max-w-md mx-auto">
+          <button id="tabColorsBtn" type="button" class="flex-1 py-1.5 rounded-lg bg-emerald-500 text-slate-950 transition text-center shadow">
+            Contenedores (5 Colores)
+          </button>
+          <button id="tabFactsBtn" type="button" class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition text-center">
+            💡 Datos Curiosos
+          </button>
+        </div>
+
+        <div id="tabColorsContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-yellow-500/30 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="flex items-center gap-2 font-bold text-xs text-yellow-400">
+                  <span class="w-3.5 h-3.5 rounded-full bg-yellow-400 inline-block"></span>
+                  Amarillo: Plásticos y Latas
+                </span>
+                <span class="text-[10px] bg-yellow-950 text-yellow-300 px-2 py-0.5 rounded-md border border-yellow-800">⏳ 100 a 500 años</span>
+              </div>
+              <p class="text-[11px] text-slate-300 mb-2"><strong>Acepta:</strong> Plásticos PET, latas, envases plásticos, juguetes y accesorios plásticos de distinto tipo.</p>
+            </div>
+            <p class="text-[11px] text-yellow-200 bg-yellow-950/40 p-2 rounded-lg border border-yellow-500/20">
+              <strong>💡 Dato Curioso:</strong> Reciclar plásticos PET y latas ahorra hasta un 95% de energía comparado con producir materiales vírgenes.
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-blue-500/30 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="flex items-center gap-2 font-bold text-xs text-blue-400">
+                  <span class="w-3.5 h-3.5 rounded-full bg-blue-500 inline-block"></span>
+                  Azul: Papel, Cartón y Tetrapak
+                </span>
+                <span class="text-[10px] bg-blue-950 text-blue-300 px-2 py-0.5 rounded-md border border-blue-800">⏳ 2 a 5 meses</span>
+              </div>
+              <p class="text-[11px] text-slate-300 mb-2"><strong>Acepta:</strong> Papeles, cartones, Tetrapak, cajas de huevo, servilletas, hojas y cualquier residuo asociado a papel o cartón.</p>
+            </div>
+            <p class="text-[11px] text-blue-200 bg-blue-950/40 p-2 rounded-lg border border-blue-500/20">
+              <strong>💡 Dato Curioso:</strong> ¡Reciclar 1 tonelada de papel salva 17 árboles adultos y ahorra más de 26.000 litros de agua!
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-emerald-500/30 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="flex items-center gap-2 font-bold text-xs text-emerald-400">
+                  <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block"></span>
+                  Verde: Vidrio
+                </span>
+                <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-md border border-emerald-800">⏳ +4.000 años</span>
+              </div>
+              <p class="text-[11px] text-slate-300 mb-2"><strong>Acepta:</strong> Cualquier objeto de vidrio (botellas, frascos, vasos, envases de vidrio).</p>
+            </div>
+            <p class="text-[11px] text-emerald-200 bg-emerald-950/40 p-2 rounded-lg border border-emerald-500/20">
+              <strong>💡 Dato Curioso:</strong> El vidrio es 100% e infinitamente reciclable sin perder calidad, resistencia ni transparencia.
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-red-500/30 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="flex items-center gap-2 font-bold text-xs text-red-400">
+                  <span class="w-3.5 h-3.5 rounded-full bg-red-500 inline-block"></span>
+                  Rojo: Materiales Peligrosos
+                </span>
+                <span class="text-[10px] bg-red-950 text-red-300 px-2 py-0.5 rounded-md border border-red-800">⏳ 500 a 1.000 años</span>
+              </div>
+              <p class="text-[11px] text-slate-300 mb-2"><strong>Acepta:</strong> Materiales peligrosos, pilas, celulares, cables y otros elementos catalogados como peligrosos.</p>
+            </div>
+            <p class="text-[11px] text-red-200 bg-red-950/40 p-2 rounded-lg border border-red-500/20">
+              <strong>💡 Dato Curioso:</strong> Una sola pila botón mal desechada puede contaminar hasta 600.000 litros de agua. ¡Por eso van al contenedor rojo!
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-gray-400/30 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="flex items-center gap-2 font-bold text-xs text-gray-300">
+                  <span class="w-3.5 h-3.5 rounded-full bg-gray-400 inline-block"></span>
+                  Gris: Orgánico y No Reciclable
+                </span>
+                <span class="text-[10px] bg-gray-950 text-gray-300 px-2 py-0.5 rounded-md border border-gray-800">⏳ Variable</span>
+              </div>
+              <p class="text-[11px] text-slate-300 mb-2"><strong>Acepta:</strong> Desperdicio orgánico y cualquier otra cosa que no sea reciclable en los colores anteriores.</p>
+            </div>
+            <p class="text-[11px] text-gray-200 bg-gray-950/40 p-2 rounded-lg border border-gray-500/20">
+              <strong>💡 Dato Curioso:</strong> La materia orgánica adecuadamente procesada se transforma en compost fertilizante para devolver nutrientes a la tierra.
+            </p>
+          </div>
+        </div>
+
+        <div id="tabFactsContent" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="p-3 bg-emerald-950/30 rounded-xl border border-emerald-500/30 flex items-start gap-3">
+            <span class="text-2xl">🌍</span>
+            <div>
+              <h4 class="text-xs font-bold text-emerald-300">El Gran Impacto del Planeta</h4>
+              <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                Si todas las personas en el mundo reciclaran al menos el 50% de sus residuos, se evitarían más de 2.000 millones de toneladas de emisiones de CO2 al año.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal Auxiliar -->
+  <div id="customModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full text-center space-y-3 shadow-2xl">
+      <h3 id="modalTitle" class="text-lg font-bold text-slate-100">Aviso</h3>
+      <p id="modalMessage" class="text-sm text-slate-300">Mensaje del sistema.</p>
+      <button id="modalCloseBtn" type="button" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-xl text-sm transition">
+        Aceptar
+      </button>
+    </div>
+  </div>
+
+  <!-- Lógica JavaScript -->
+  <script>
+    // PEGA AQUÍ TU CLAVE DE GOOGLE AI STUDIO (empieza por AIzaSy...)
+    const apiKey = "AIzaSy_AQ.Ab8RN6KxQmUiupB30M-Fe3EUyVXQopXEHq5kYE4UEbIgDlgE9Q"; 
+    let currentStream = null;
+    let facingMode = 'user'; 
+
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('snapshotCanvas');
+    const videoContainer = document.getElementById('videoContainer');
+    const captureBtn = document.getElementById('captureBtn');
+    const switchCamBtn = document.getElementById('switchCamBtn');
+    const connectFrontCamBtn = document.getElementById('connectFrontCamBtn');
+    const connectBackCamBtn = document.getElementById('connectBackCamBtn');
+    const startCameraPrompt = document.getElementById('startCameraPrompt');
+    const retryCamBtn = document.getElementById('retryCamBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileInputIcon = document.getElementById('fileInputIcon');
+    const nativeFrontInput = document.getElementById('nativeFrontInput');
+    const nativeBackInput = document.getElementById('nativeBackInput');
+    const fileInputBackError = document.getElementById('fileInputBackError');
+    const liveCamButtons = document.getElementById('liveCamButtons');
+    const scannerOverlay = document.getElementById('scannerOverlay');
+    const cameraError = document.getElementById('cameraError');
+    const cameraErrorMsg = document.getElementById('cameraErrorMsg');
+
+    const resultCard = document.getElementById('resultCard');
+    const resultHeader = document.getElementById('resultHeader');
+    const binColorTitle = document.getElementById('binColorTitle');
+    const categoryBadge = document.getElementById('categoryBadge');
+    const detectedItemName = document.getElementById('detectedItemName');
+    const decompTimeText = document.getElementById('decompTimeText');
+    const prepInstructions = document.getElementById('prepInstructions');
+    const funFactText = document.getElementById('funFactText');
+    const ecoTip = document.getElementById('ecoTip');
+    const capturedPreview = document.getElementById('capturedPreview');
+    const resetBtn = document.getElementById('resetBtn');
+    const toggleGuideBtn = document.getElementById('toggleGuideBtn');
+    const guideSection = document.getElementById('guideSection');
+    const closeGuideBtn = document.getElementById('closeGuideBtn');
+    const tabColorsBtn = document.getElementById('tabColorsBtn');
+    const tabFactsBtn = document.getElementById('tabFactsBtn');
+    const tabColorsContent = document.getElementById('tabColorsContent');
+    const tabFactsContent = document.getElementById('tabFactsContent');
+
+    const customModal = document.getElementById('customModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // Ícono y manifiesto integrados dentro del mismo archivo HTML
+    (function setupSingleFileIcons() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <rect width="512" height="512" rx="112" fill="#0f172a"/>
+        <circle cx="256" cy="256" r="190" fill="#10b981" fill-opacity="0.18" stroke="#34d399" stroke-width="18"/>
+        <text x="256" y="250" font-family="sans-serif" font-weight="900" font-size="78" fill="#34d399" text-anchor="middle">LEM</text>
+        <text x="256" y="330" font-family="sans-serif" font-weight="800" font-size="74" fill="#ffffff" text-anchor="middle">2036</text>
+      </svg>`;
+      const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
+
+      const appleIconEl = document.getElementById('appleTouchIcon');
+      if (appleIconEl) appleIconEl.href = iconUrl;
+
+      const manifestData = {
+        name: "LEM2036 - Sistema de Reciclaje para el Futuro",
+        short_name: "LEM2036",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#0f172a",
+        theme_color: "#0f172a",
+        icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
+      };
+
+      const manifestLink = document.getElementById('appManifestLink');
+      if (manifestLink) {
+        manifestLink.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestData));
+      }
+    })();
+
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      });
+    }
+
+    async function initCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
+      }
+
+      cameraError.classList.add('hidden');
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        startCameraPrompt.classList.remove('hidden');
+        if (liveCamButtons) liveCamButtons.classList.add('hidden');
+        return;
+      }
+
+      try {
+        currentStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: facingMode } },
+          audio: false
+        });
+      } catch (err) {
+        try {
+          currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        } catch (fallbackErr) {
+          startCameraPrompt.classList.remove('hidden');
+          return;
+        }
+      }
+
+      try {
+        video.srcObject = currentStream;
+        video.classList.toggle('mirror', facingMode === 'user');
+        await video.play();
+        startCameraPrompt.classList.add('hidden');
+      } catch (playErr) {
+        startCameraPrompt.classList.remove('hidden');
+      }
+    }
+
+    videoContainer.addEventListener('click', (e) => {
+      if (!currentStream && e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+        initCamera();
+      }
+    });
+
+    switchCamBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      facingMode = (facingMode === 'user') ? 'environment' : 'user';
+      initCamera();
+    });
+
+    if (connectFrontCamBtn) {
+      connectFrontCamBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        facingMode = 'user';
+        initCamera();
+      });
+    }
+
+    if (connectBackCamBtn) {
+      connectBackCamBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        facingMode = 'environment';
+        initCamera();
+      });
+    }
+
+    retryCamBtn.addEventListener('click', initCamera);
+
+    function captureSnapshot() {
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+
+      if (facingMode === 'user') {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.85);
+    }
+
+    function generateInfoQRCode(analysis) {
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+
+      const text = `LEM2036 - FICHA DE RECICLAJE
+---------------------------------
+Objeto: ${analysis.item_detected || 'Residuo'}
+Contenedor: ${analysis.bin_color || ''} (${analysis.category || ''})
+Preparación: ${analysis.instructions || ''}
+Descomposición: ${analysis.decomposition_time || 'N/A'}
+Dato Curioso: ${analysis.fun_fact || ''}
+---------------------------------
+Leonor Pulgar - Mariana Cabezas 5°E`;
+
+      if (typeof qrcode === 'function') {
+        try {
+          const qr = qrcode(0, 'M');
+          qr.addData(unescape(encodeURIComponent(text)));
+          qr.make();
+          
+          qrContainer.innerHTML = qr.createImgTag(6, 6);
+          const img = qrContainer.querySelector('img');
+          if (img) {
+            img.className = "w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-md border border-slate-200";
+            img.alt = "Código QR LEM2036";
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const encodedText = encodeURIComponent(text);
+      const fallbackImg = document.createElement('img');
+      fallbackImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedText}`;
+      fallbackImg.className = "w-48 h-48 sm:w-56 sm:h-56 rounded-xl shadow-md border border-slate-200";
+      fallbackImg.alt = "Código QR LEM2036";
+      fallbackImg.onerror = function() {
+        this.src = `https://quickchart.io/qr?size=220&text=${encodedText}`;
+      };
+      qrContainer.appendChild(fallbackImg);
+    }
+
+    async function analyzeWasteWithGemini(base64ImageData) {
+      if (!apiKey || apiKey.includes("PEGA_AQUI") || !apiKey.startsWith("AIza")) {
+        throw new Error("Falta una API Key válida de Google AI Studio (debe comenzar con AIzaSy...) en la línea 319.");
+      }
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const rawBase64 = base64ImageData.split(',')[1];
+
+      const promptText = `Analiza la imagen del residuo u objeto y clasifícalo estrictamente bajo las siguientes 5 reglas de reciclaje del sistema LEM2036:
+
+1. **AMARILLO**: Plásticos PET, latas, envases plásticos, juguetes, accesorios plásticos de distinto tipo.
+2. **AZUL**: Papeles, cartones y Tetrapak, cajas de huevo, servilletas, hojas, cualquier cosa que se asocie a papel o cartón.
+3. **VERDE**: Cualquier cosa de vidrio (botellas, frascos, vasos, envases de vidrio).
+4. **ROJO**: Materiales peligrosos, pilas, celulares, cables y otros catalogados como peligrosos o basura electrónica.
+5. **GRIS**: Desperdicio orgánico y cualquier otra cosa que no sea reciclable en los colores anteriores.
+
+Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
+{
+  "item_detected": "Nombre específico del residuo detectado",
+  "category": "Una de: 'Plásticos y Latas', 'Papel, Cartón y Tetrapak', 'Vidrio', 'Materiales Peligrosos', 'Orgánico y No Reciclable'",
+  "bin_color": "Una de: 'AMARILLO', 'AZUL', 'VERDE', 'ROJO', 'GRIS'",
+  "bin_hex": "'#EAB308' para AMARILLO, '#2563EB' para AZUL, '#10B981' para VERDE, '#EF4444' para ROJO, '#6B7280' para GRIS",
+  "bin_text_color": "#FFFFFF o #000000 según el contraste",
+  "instructions": "Instrucción corta de cómo preparar o desechar el residuo",
+  "decomposition_time": "Tiempo aproximado que tarda en degradarse (ej. '450 años', '2 a 5 meses', '+4.000 años', '1 a 6 meses')",
+  "fun_fact": "Un dato curioso o entretenido sobre la fabricación, historia o reciclaje de este residuo específico",
+  "environmental_tip": "Impacto positivo directo al reciclar o gestionar este objeto adecuadamente"
+}`;
+
+      const payload = {
+        contents: [{
+          role: "user",
+          parts: [
+            { text: promptText },
+            {
+              inlineData: {
+                mimeType: "image/jpeg",
+                data: rawBase64
+              }
+            }
+          ]
+        }],
+        generationConfig: {
+          responseMimeType: "application/json"
+        }
+      };
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody.error?.message || `Error HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!jsonText) throw new Error("Respuesta vacía de Gemini");
+
+      return JSON.parse(jsonText);
+    }
+
+    async function processImage(dataUrl) {
+      scannerOverlay.classList.remove('hidden');
+
+      try {
+        const analysis = await analyzeWasteWithGemini(dataUrl);
+
+        capturedPreview.src = dataUrl;
+        binColorTitle.textContent = analysis.bin_color || "CONTENEDOR";
+        categoryBadge.textContent = analysis.category || "Basura";
+        detectedItemName.textContent = analysis.item_detected || "Objeto detectado";
+        decompTimeText.textContent = analysis.decomposition_time || "Variable";
+        prepInstructions.textContent = analysis.instructions || "Limpiar y separar adecuadamente.";
+        funFactText.textContent = analysis.fun_fact || "Reciclar este residuo permite reintroducir materiales valiosos a la cadena productiva.";
+        ecoTip.textContent = analysis.environmental_tip || "Reciclar disminuye la contaminación y ahorra valiosos recursos naturales.";
+
+        const bgColor = analysis.bin_hex || '#2563EB';
+        const txtColor = analysis.bin_text_color || '#FFFFFF';
+        resultHeader.style.backgroundColor = bgColor;
+        resultHeader.style.color = txtColor;
+
+        resultCard.classList.remove('hidden');
+
+        generateInfoQRCode(analysis);
+
+        resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (err) {
+        showModal("Error de Clasificación", err.message);
+      } finally {
+        scannerOverlay.classList.add('hidden');
+      }
+    }
+
+    captureBtn.addEventListener('click', () => {
+      if (!currentStream || video.readyState < 2) {
+        initCamera();
+        return;
+      }
+      const snapshot = captureSnapshot();
+      processImage(snapshot);
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        resultCard.classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    function onFileSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => processImage(event.target.result);
+      reader.readAsDataURL(file);
+    }
+
+    fileInput.addEventListener('change', onFileSelected);
+    fileInputIcon.addEventListener('change', onFileSelected);
+    if (nativeFrontInput) nativeFrontInput.addEventListener('change', onFileSelected);
+    if (nativeBackInput) nativeBackInput.addEventListener('change', onFileSelected);
+    if (fileInputBackError) fileInputBackError.addEventListener('change', onFileSelected);
+
+    toggleGuideBtn.addEventListener('click', () => {
+      guideSection.classList.toggle('hidden');
+      if (!guideSection.classList.contains('hidden')) {
+        guideSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    closeGuideBtn.addEventListener('click', () => guideSection.classList.add('hidden'));
+
+    tabColorsBtn.addEventListener('click', () => {
+      tabColorsBtn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow');
+      tabColorsBtn.classList.remove('text-slate-400');
+      tabFactsBtn.classList.remove('bg-emerald-500', 'text-slate-950', 'shadow');
+      tabFactsBtn.classList.add('text-slate-400');
+
+      tabColorsContent.classList.remove('hidden');
+      tabFactsContent.classList.add('hidden');
+    });
+
+    tabFactsBtn.addEventListener('click', () => {
+      tabFactsBtn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow');
+      tabFactsBtn.classList.remove('text-slate-400');
+      tabColorsBtn.classList.remove('bg-emerald-500', 'text-slate-950', 'shadow');
+      tabColorsBtn.classList.add('text-slate-400');
+
+      tabFactsContent.classList.remove('hidden');
+      tabColorsContent.classList.add('hidden');
+    });
+
+    function showModal(title, msg) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = msg;
+      customModal.classList.remove('hidden');
+    }
+    modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
+
+    document.addEventListener('DOMContentLoaded', initCamera);
+    window.addEventListener('load', () => {
+      if (!currentStream) initCamera();
+    });
+  </script>
+</body>
+</html>
