@@ -626,7 +626,7 @@ Leonor Pulgar - Mariana Cabezas 5°E`;
     }
 
     async function analyzeWasteWithGemini(base64ImageData) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
       const rawBase64 = base64ImageData.split(',')[1];
 
       const promptText = `Analiza la imagen del residuo u objeto y clasifícalo estrictamente bajo las siguientes 5 reglas de reciclaje del sistema LEM2036:
@@ -722,7 +722,7 @@ Devuelve EXCLUSIVAMENTE un código JSON válido con esta estructura:
     }
 
     captureBtn.addEventListener('click', () => {
-      if (!currentStream || video.readyState < 2) {
+      if (!currentStream || video.readyState !== 4) {
         if (nativeFrontInput) {
           nativeFrontInput.click();
         } else {
