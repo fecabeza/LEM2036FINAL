@@ -59,23 +59,22 @@
       <img src="https://drive.google.com/thumbnail?id=1cYn5a9dTNzOnB8QnrKHxPSUHAI3Av6-1&sz=w1000" alt="Leonor y Mariana" class="w-full h-auto block object-cover" onerror="this.style.display='none';">
     </div>
 
-    <!-- Cuadro de Cámara -->
+    <!-- Cuadro de Cámara Integrada -->
     <div class="flex flex-col gap-6 w-full max-w-2xl mx-auto">
       <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl flex flex-col w-full">
         
         <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
-          <!-- Video en vivo dentro del cuadro -->
           <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover mirror"></video>
           <canvas id="snapshotCanvas" class="hidden"></canvas>
 
-          <!-- Marco guía cuando el video está activo -->
+          <!-- Marco guía -->
           <div id="liveFrameGuide" class="hidden absolute inset-6 border-2 border-dashed border-emerald-400/50 rounded-2xl pointer-events-none flex items-end justify-center pb-3">
             <span class="bg-slate-950/75 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
               Centra el residuo dentro del cuadro
             </span>
           </div>
 
-          <!-- Capa de activación (Modo Video en Vivo) -->
+          <!-- Capa de activación -->
           <div id="startCameraOverlay" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-6 gap-4 z-10 cursor-pointer">
             <div class="p-4 bg-emerald-500/20 rounded-full text-emerald-400 border border-emerald-400/40 animate-pulse">
               <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +82,7 @@
               </svg>
             </div>
             <div class="space-y-2 max-w-md">
-              <h2 id="camOverlayTitle" class="text-lg sm:text-xl font-black text-white">Activar Cámara Frontal</h2>
+              <h2 class="text-lg sm:text-xl font-black text-white">Activar Cámara Frontal</h2>
               <p id="camStatusText" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Toca el botón verde para encender la cámara en vivo dentro del cuadro.
               </p>
@@ -91,14 +90,9 @@
             <button id="enableInlineCamBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 px-6 rounded-xl shadow-lg text-sm transition">
               🎥 Encender Cámara en Vivo
             </button>
-            <!-- Botón de respaldo automático si Google Apps Script bloquea el video en vivo -->
-            <label id="fallbackNativeBtn" for="nativeFrontInput" class="hidden cursor-pointer bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-lg text-sm transition">
-              📸 Tomar Foto con Cámara Frontal
-            </label>
           </div>
 
-          <!-- Inputs ocultos de respaldo -->
-          <input type="file" id="nativeFrontInput" accept="image/*" capture="user" class="hidden">
+          <!-- Inputs ocultos -->
           <input type="file" id="galleryInput" accept="image/*" class="hidden">
 
           <!-- Capa de Escaneo -->
@@ -209,19 +203,6 @@
     </div>
   </main>
 
-  <!-- Modal API Key -->
-  <div id="apiConfigModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-      <h3 class="text-base font-bold text-slate-100">Conexión IA Gemini</h3>
-      <p class="text-xs text-slate-300">Pega tu API Key de Google AI Studio (empieza con <code>AIzaSy...</code>):</p>
-      <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono">
-      <div class="flex gap-2">
-        <button id="cancelApiBtn" type="button" class="flex-1 bg-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs">Cancelar</button>
-        <button id="saveApiBtn" type="button" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Guardar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal Auxiliar -->
   <div id="customModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full text-center space-y-3 shadow-2xl">
@@ -232,23 +213,20 @@
   </div>
 
   <script>
-    const apiKey = "PEGA_AQUI_TU_API_KEY_AIzaSy";
-    let userCustomApiKey = localStorage.getItem('lem2036_api_key') || (apiKey.startsWith('AIza') ? apiKey : '');
+    // ◀◀◀ LÍNEA 214: AIzaSy_AQ.Ab8RN6J5ucPw0z7Ag_-1VLwLbxouDUG51665OTHthnN4tlF9Rw ◀◀◀
+    const EMBEDDED_API_KEY = "AIzaSy_TU_CLAVE_AQUI";
+
     let currentStream = null;
     let facingMode = 'user';
-    let iframeBlocked = false;
 
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('snapshotCanvas');
     const startCameraOverlay = document.getElementById('startCameraOverlay');
     const enableInlineCamBtn = document.getElementById('enableInlineCamBtn');
-    const fallbackNativeBtn = document.getElementById('fallbackNativeBtn');
-    const camOverlayTitle = document.getElementById('camOverlayTitle');
     const camStatusText = document.getElementById('camStatusText');
     const liveFrameGuide = document.getElementById('liveFrameGuide');
     const switchCamBtn = document.getElementById('switchCamBtn');
     const captureBtn = document.getElementById('captureBtn');
-    const nativeFrontInput = document.getElementById('nativeFrontInput');
     const galleryInput = document.getElementById('galleryInput');
     const scannerOverlay = document.getElementById('scannerOverlay');
 
@@ -268,8 +246,6 @@
     const modalTitle = document.getElementById('modalTitle');
     const modalMessage = document.getElementById('modalMessage');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
-    const apiConfigModal = document.getElementById('apiConfigModal');
-    const geminiApiKeyInput = document.getElementById('geminiApiKeyInput');
 
     async function startInlineCamera() {
       if (currentStream) {
@@ -278,7 +254,7 @@
       }
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        activateIframeFallbackMode();
+        camStatusText.textContent = "Tu navegador no soporta acceso directo a la cámara.";
         return;
       }
 
@@ -294,10 +270,9 @@
             audio: false
           });
         } catch (err) {
-          // Si estamos dentro de Google Apps Script (iframe), activamos automáticamente el modo foto sin trabarse
-          if (window.self !== window.top || err.name === 'NotAllowedError' || err.name === 'SecurityError') {
-            activateIframeFallbackMode();
-          }
+          startCameraOverlay.classList.remove('hidden');
+          liveFrameGuide.classList.add('hidden');
+          camStatusText.innerHTML = `Permiso requerido (${err.name}). Toca el botón verde y selecciona <strong>Permitir</strong>.`;
           return;
         }
       }
@@ -310,22 +285,12 @@
         video.classList.toggle('mirror', facingMode === 'user');
         
         await video.play();
-        iframeBlocked = false;
         startCameraOverlay.classList.add('hidden');
         liveFrameGuide.classList.remove('hidden');
       } catch (playErr) {
-        activateIframeFallbackMode();
+        startCameraOverlay.classList.remove('hidden');
+        camStatusText.textContent = "Toca el botón verde para iniciar la cámara.";
       }
-    }
-
-    function activateIframeFallbackMode() {
-      iframeBlocked = true;
-      startCameraOverlay.classList.remove('hidden');
-      liveFrameGuide.classList.add('hidden');
-      enableInlineCamBtn.classList.add('hidden');
-      fallbackNativeBtn.classList.remove('hidden');
-      camOverlayTitle.textContent = "Cámara Frontal Lista";
-      camStatusText.innerHTML = "Google Apps Script restringe el video continuo dentro de este marco. Presiona el botón amarillo para capturar directamente con tu cámara frontal:";
     }
 
     window.addEventListener('load', startInlineCamera);
@@ -333,6 +298,7 @@
       e.stopPropagation();
       startInlineCamera();
     });
+    startCameraOverlay.addEventListener('click', startInlineCamera);
 
     switchCamBtn.addEventListener('click', () => {
       facingMode = (facingMode === 'user') ? 'environment' : 'user';
@@ -352,108 +318,4 @@
     }
 
     captureBtn.addEventListener('click', () => {
-      if (currentStream && video.readyState >= 2) {
-        processImage(captureVideoFrame());
-      } else if (iframeBlocked) {
-        nativeFrontInput.click();
-      } else {
-        startInlineCamera();
-      }
-    });
-
-    function handleFileUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => processImage(ev.target.result);
-      reader.readAsDataURL(file);
-    }
-
-    nativeFrontInput.addEventListener('change', handleFileUpload);
-    galleryInput.addEventListener('change', handleFileUpload);
-
-    function generateInfoQRCode(analysis) {
-      const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = "";
-      const text = `LEM2036 - FICHA DE RECICLAJE\nObjeto: ${analysis.item_detected}\nContenedor: ${analysis.bin_color}\nPreparación: ${analysis.instructions}\nDescomposición: ${analysis.decomposition_time}`;
-      if (typeof qrcode === 'function') {
-        const qr = qrcode(0, 'M');
-        qr.addData(unescape(encodeURIComponent(text)));
-        qr.make();
-        qrContainer.innerHTML = qr.createImgTag(5, 5);
-      }
-    }
-
-    async function analyzeWasteWithGemini(base64ImageData) {
-      if (!userCustomApiKey || !userCustomApiKey.startsWith('AIza')) {
-        throw new Error("API_KEY_REQUIRED");
-      }
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${userCustomApiKey}`;
-      const rawBase64 = base64ImageData.split(',')[1];
-      const promptText = `Clasifica este residuo según LEM2036 (AMARILLO: plásticos/latas, AZUL: papel/cartón/tetrapak, VERDE: vidrio, ROJO: peligrosos/electrónicos, GRIS: orgánico/no reciclable). Responde SOLO JSON: {"item_detected":"","category":"","bin_color":"","bin_hex":"","bin_text_color":"#FFFFFF","instructions":"","decomposition_time":"","fun_fact":"","environmental_tip":""}`;
-
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: promptText }, { inlineData: { mimeType: "image/jpeg", data: rawBase64 } }] }],
-          generationConfig: { responseMimeType: "application/json" }
-        })
-      });
-      if (!res.ok) throw new Error(res.status === 400 || res.status === 403 ? "API_KEY_REQUIRED" : "HTTP_ERROR");
-      const data = await res.json();
-      return JSON.parse(data.candidates[0].content.parts[0].text);
-    }
-
-    async function processImage(dataUrl) {
-      scannerOverlay.classList.remove('hidden');
-      try {
-        const analysis = await analyzeWasteWithGemini(dataUrl);
-        capturedPreview.src = dataUrl;
-        binColorTitle.textContent = analysis.bin_color || "CONTENEDOR";
-        categoryBadge.textContent = analysis.category || "Residuo";
-        detectedItemName.textContent = analysis.item_detected || "Objeto";
-        decompTimeText.textContent = analysis.decomposition_time || "Variable";
-        prepInstructions.textContent = analysis.instructions || "Separar adecuadamente.";
-        funFactText.textContent = analysis.fun_fact || "";
-        ecoTip.textContent = analysis.environmental_tip || "";
-        resultHeader.style.backgroundColor = analysis.bin_hex || '#2563EB';
-        resultHeader.style.color = analysis.bin_text_color || '#FFFFFF';
-        resultCard.classList.remove('hidden');
-        generateInfoQRCode(analysis);
-        resultCard.scrollIntoView({ behavior: 'smooth' });
-      } catch (err) {
-        if (err.message === "API_KEY_REQUIRED") {
-          apiConfigModal.classList.remove('hidden');
-        } else {
-          modalTitle.textContent = "Error";
-          modalMessage.textContent = "No se pudo analizar la imagen. Verifica tu conexión o API Key.";
-          customModal.classList.remove('hidden');
-        }
-      } finally {
-        scannerOverlay.classList.add('hidden');
-      }
-    }
-
-    resetBtn.addEventListener('click', () => {
-      resultCard.classList.add('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.getElementById('fullscreenBtn').addEventListener('click', () => {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-      else document.exitFullscreen();
-    });
-
-    document.getElementById('toggleGuideBtn').addEventListener('click', () => document.getElementById('guideSection').classList.toggle('hidden'));
-    document.getElementById('closeGuideBtn').addEventListener('click', () => document.getElementById('guideSection').classList.add('hidden'));
-    document.getElementById('cancelApiBtn').addEventListener('click', () => apiConfigModal.classList.add('hidden'));
-    document.getElementById('saveApiBtn').addEventListener('click', () => {
-      const k = geminiApiKeyInput.value.trim();
-      if (k) { userCustomApiKey = k; localStorage.setItem('lem2036_api_key', k); }
-      apiConfigModal.classList.add('hidden');
-    });
-    modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
-  </script>
-</body>
-</html>
+      if (!current
