@@ -64,7 +64,7 @@
       <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl flex flex-col w-full">
         
         <div class="relative bg-black aspect-[4/3] flex items-center justify-center overflow-hidden">
-          <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover mirror"></video>
+          <video id="webcam" autoplay playsinline webkit-playsinline muted class="w-full h-full object-cover mirror"></video>
           <canvas id="snapshotCanvas" class="hidden"></canvas>
 
           <!-- Marco guía -->
@@ -75,24 +75,24 @@
           </div>
 
           <!-- Capa de activación -->
-          <div id="startCameraOverlay" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-6 gap-4 z-10 cursor-pointer">
-            <div class="p-4 bg-emerald-500/20 rounded-full text-emerald-400 border border-emerald-400/40 animate-pulse">
+          <div id="startCameraOverlay" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center text-center p-6 gap-4 z-10">
+            <div class="p-4 bg-emerald-500/20 rounded-full text-emerald-400 border border-emerald-400/40">
               <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
               </svg>
             </div>
             <div class="space-y-2 max-w-md">
-              <h2 class="text-lg sm:text-xl font-black text-white">Activar Cámara Frontal</h2>
+              <h2 class="text-lg sm:text-xl font-black text-white">Cámara Frontal</h2>
               <p id="camStatusText" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Toca el botón verde para encender la cámara en vivo dentro del cuadro.
+                Presiona el botón verde para activar la cámara en vivo.
               </p>
             </div>
-            <button id="enableInlineCamBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 px-6 rounded-xl shadow-lg text-sm transition">
-              🎥 Encender Cámara en Vivo
+            <button id="enableInlineCamBtn" type="button" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 px-7 rounded-xl shadow-lg text-base transition active:scale-95">
+              🎥 Activar Cámara Ahora
             </button>
           </div>
 
-          <!-- Inputs ocultos -->
+          <!-- Input galería -->
           <input type="file" id="galleryInput" accept="image/*" class="hidden">
 
           <!-- Capa de Escaneo -->
@@ -213,11 +213,12 @@
   </div>
 
   <script>
-    // ◀◀◀ LÍNEA 214: AIzaSy_AQ.Ab8RN6J5ucPw0z7Ag_-1VLwLbxouDUG51665OTHthnN4tlF9Rw ◀◀◀
+    // ◀◀◀ LÍNEA 212: PEGA TU API KEY DE GOOGLE AI STUDIO DENTRO DE LAS COMILLAS ◀◀◀
     const EMBEDDED_API_KEY = "AIzaSy_TU_CLAVE_AQUI";
 
     let currentStream = null;
     let facingMode = 'user';
+    let isStartingCamera = false;
 
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('snapshotCanvas');
@@ -248,57 +249,67 @@
     const modalCloseBtn = document.getElementById('modalCloseBtn');
 
     async function startInlineCamera() {
-      if (currentStream) {
-        currentStream.getTracks().forEach(t => t.stop());
-        currentStream = null;
-      }
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        camStatusText.textContent = "Tu navegador no soporta acceso directo a la cámara.";
-        return;
-      }
+      if (isStartingCamera) return;
+      isStartingCamera = true;
+      enableInlineCamBtn.disabled = true;
+      enableInlineCamBtn.textContent = "⏳ Conectando cámara...";
 
       try {
-        currentStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: facingMode },
-          audio: false
-        });
-      } catch (firstErr) {
+        if (currentStream) {
+          currentStream.getTracks().forEach(t => t.stop());
+          currentStream = null;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error("Tu navegador no soporta cámara en vivo (usa Chrome o Safari en HTTPS).");
+        }
+
+        let stream = null;
         try {
-          currentStream = await navigator.mediaDevices.getUserMedia({
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: facingMode },
+            audio: false
+          });
+        } catch (e) {
+          stream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: false
           });
-        } catch (err) {
-          startCameraOverlay.classList.remove('hidden');
-          liveFrameGuide.classList.add('hidden');
-          camStatusText.innerHTML = `Permiso requerido (${err.name}). Toca el botón verde y selecciona <strong>Permitir</strong>.`;
-          return;
         }
-      }
 
-      try {
-        video.srcObject = currentStream;
-        video.setAttribute('playsinline', '');
-        video.setAttribute('autoplay', '');
-        video.muted = true;
+        currentStream = stream;
+        video.srcObject = stream;
         video.classList.toggle('mirror', facingMode === 'user');
-        
+
+        await new Promise((resolve) => {
+          if (video.readyState >= 1) {
+            resolve();
+          } else {
+            video.onloadedmetadata = () => resolve();
+          }
+        });
+
         await video.play();
         startCameraOverlay.classList.add('hidden');
         liveFrameGuide.classList.remove('hidden');
-      } catch (playErr) {
+      } catch (err) {
         startCameraOverlay.classList.remove('hidden');
-        camStatusText.textContent = "Toca el botón verde para iniciar la cámara.";
+        liveFrameGuide.classList.add('hidden');
+        if (window.self !== window.top) {
+          camStatusText.innerHTML = "Estás viendo la app dentro de Google Apps Script, que bloquea la cámara. Abre directamente tu enlace de <strong>GitHub Pages</strong>.";
+        } else {
+          camStatusText.innerHTML = `No se pudo abrir la cámara: <strong>${err.message || err.name}</strong>.<br>Verifica el ícono del candado en la barra de direcciones y activa el permiso de Cámara.`;
+        }
+      } finally {
+        isStartingCamera = false;
+        enableInlineCamBtn.disabled = false;
+        enableInlineCamBtn.textContent = "🎥 Activar Cámara Ahora";
       }
     }
 
+    // Única llamada limpia en el botón (sin doble evento en el contenedor padre)
+    enableInlineCamBtn.addEventListener('click', startInlineCamera);
     window.addEventListener('load', startInlineCamera);
-    enableInlineCamBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      startInlineCamera();
-    });
-    startCameraOverlay.addEventListener('click', startInlineCamera);
 
     switchCamBtn.addEventListener('click', () => {
       facingMode = (facingMode === 'user') ? 'environment' : 'user';
@@ -318,4 +329,95 @@
     }
 
     captureBtn.addEventListener('click', () => {
-      if (!current
+      if (!currentStream || video.readyState < 2) {
+        startInlineCamera();
+        return;
+      }
+      processImage(captureVideoFrame());
+    });
+
+    galleryInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => processImage(ev.target.result);
+      reader.readAsDataURL(file);
+    });
+
+    function generateInfoQRCode(analysis) {
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+      const text = `LEM2036 - FICHA DE RECICLAJE\nObjeto: ${analysis.item_detected}\nContenedor: ${analysis.bin_color}\nPreparación: ${analysis.instructions}\nDescomposición: ${analysis.decomposition_time}`;
+      if (typeof qrcode === 'function') {
+        const qr = qrcode(0, 'M');
+        qr.addData(unescape(encodeURIComponent(text)));
+        qr.make();
+        qrContainer.innerHTML = qr.createImgTag(5, 5);
+      }
+    }
+
+    async function analyzeWasteWithGemini(base64ImageData) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${EMBEDDED_API_KEY}`;
+      const rawBase64 = base64ImageData.split(',')[1];
+      const promptText = `Clasifica este residuo según LEM2036 (AMARILLO: plásticos/latas, AZUL: papel/cartón/tetrapak, VERDE: vidrio, ROJO: peligrosos/electrónicos, GRIS: orgánico/no reciclable). Responde SOLO JSON: {"item_detected":"","category":"","bin_color":"","bin_hex":"","bin_text_color":"#FFFFFF","instructions":"","decomposition_time":"","fun_fact":"","environmental_tip":""}`;
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: promptText }, { inlineData: { mimeType: "image/jpeg", data: rawBase64 } }] }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `Error HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      return JSON.parse(data.candidates[0].content.parts[0].text);
+    }
+
+    async function processImage(dataUrl) {
+      scannerOverlay.classList.remove('hidden');
+      try {
+        const analysis = await analyzeWasteWithGemini(dataUrl);
+        capturedPreview.src = dataUrl;
+        binColorTitle.textContent = analysis.bin_color || "CONTENEDOR";
+        categoryBadge.textContent = analysis.category || "Residuo";
+        detectedItemName.textContent = analysis.item_detected || "Objeto";
+        decompTimeText.textContent = analysis.decomposition_time || "Variable";
+        prepInstructions.textContent = analysis.instructions || "Separar adecuadamente.";
+        funFactText.textContent = analysis.fun_fact || "";
+        ecoTip.textContent = analysis.environmental_tip || "";
+        resultHeader.style.backgroundColor = analysis.bin_hex || '#2563EB';
+        resultHeader.style.color = analysis.bin_text_color || '#FFFFFF';
+        resultCard.classList.remove('hidden');
+        generateInfoQRCode(analysis);
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        modalTitle.textContent = "Error al Analizar";
+        modalMessage.textContent = "No se pudo conectar con Gemini: " + err.message;
+        customModal.classList.remove('hidden');
+      } finally {
+        scannerOverlay.classList.add('hidden');
+      }
+    }
+
+    resetBtn.addEventListener('click', () => {
+      resultCard.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen();
+    });
+
+    document.getElementById('toggleGuideBtn').addEventListener('click', () => document.getElementById('guideSection').classList.toggle('hidden'));
+    document.getElementById('closeGuideBtn').addEventListener('click', () => document.getElementById('guideSection').classList.add('hidden'));
+    modalCloseBtn.addEventListener('click', () => customModal.classList.add('hidden'));
+  </script>
+</body>
+</html>
